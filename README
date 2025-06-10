@@ -1,0 +1,35 @@
+Task Management System – Microservices in Go
+
+ Features
+- Built with Go (Golang) and Gin
+- Separated into microservices
+- Inter-service HTTP communication
+- Dockerized with docker-compose
+- Pagination and status filtering (GET /tasks?status=Completed)
+- Follows Single Responsibility Principle
+
+How to Run
+
+# From inside the services/ directory
+docker-compose up --build
+
+task-service runs at: http://localhost:8080
+user-service runs at: http://localhost:8081
+
+Sample API Calls
+
+Create Task
+curl -X POST http://localhost:8080/tasks \
+-H "Content-Type: application/json" \
+-d '{"title":"Buy milk","description":"from grocery store","status":"Pending"}'
+
+Get All Tasks (Paginated)
+curl "http://localhost:8080/tasks?page=1&limit=10"
+
+Filter Tasks by Status
+curl "http://localhost:8080/tasks?status=Completed"
+
+Get User (called from task-service)
+resp, err := http.Get("http://localhost:8081/users/1")
+
+
