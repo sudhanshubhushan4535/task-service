@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  task-service:
+    build:
+      context: ./task-service
+    ports:
+      - "8080:8080"
+    depends_on:
+      - user-service
+
+  user-service:
+    build:
+      context: ./user-service
+    ports:
+      - "8081:8081"
