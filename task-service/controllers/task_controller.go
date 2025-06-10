@@ -1,6 +1,9 @@
 package controllers
 
 import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
@@ -14,9 +17,24 @@ func CreateTask(c *gin.Context) {
 	var task models.Task
 	if err := c.ShouldBindJSON(&task); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
-	task.ID = storage.NextId
-	storage.NextId++
+	userId := 1
+
+	userURL := fmt.Sprintf("http://localhost:8081/users/%d", userId)
+	resp, err := http.Get(userURL)
+
+	if err != nil || resp.StatusCode != http.StatusOK {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
+		return
+	}
+	defer resp.Body.Close()
+
+	body, _ := ioutil.ReadAll(resp.Body)
+	var user map[string]interface{}
+	json.Unmarshal(body, &user)
+
+	task.ID = len(storage.Tasks) + 1
 	storage.Tasks = append(storage.Tasks, task)
 	c.JSON(http.StatusOK, task)
 }
